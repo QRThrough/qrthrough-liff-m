@@ -120,6 +120,7 @@ function ProfileForm() {
 					withAsterisk
 					required
 					label="เบอร์โทรศัพท์"
+					description="ใช้สำหรับรับรหัส OTP เพื่อยืนยันตัวตน"
 					placeholder="0891234567"
 					type="number"
 					styles={{
