@@ -105,7 +105,6 @@ function SignUp() {
 					<Stepper.Step
 						icon={<IconUserSearch size="1rem" />}
 						description="ตรวจรหัสนักศึกษา"
-						loading={loading}
 						allowStepSelect={active > 0 && active <= 2}
 					>
 						<CheckAlumni />
