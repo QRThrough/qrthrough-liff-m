@@ -63,6 +63,7 @@ function CheckAlumni() {
 	const handleSubmit = async (values: valuesForm) => {
 		setLoading(true);
 		await mutateAsync(parseInt(values.student_code));
+		form.reset();
 	};
 
 	return (

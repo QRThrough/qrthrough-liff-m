@@ -70,6 +70,7 @@ function ProfileForm() {
 		setLoading(true);
 		setSignupData((prev) => ({ ...prev, ...values }));
 		await mutateAsync({ tel: values.tel });
+		form.reset();
 	};
 
 	return (
