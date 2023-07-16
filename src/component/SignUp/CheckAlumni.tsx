@@ -1,8 +1,8 @@
 import {
 	Box,
 	Button,
-	Flex,
-	Group,
+	Card,
+	Text,
 	TextInput,
 	createStyles,
 } from "@mantine/core";
@@ -10,15 +10,15 @@ import { useForm } from "@mantine/form";
 import { useSignupContext } from "../../context/signup";
 import { notifications } from "@mantine/notifications";
 import { useMutation } from "react-query";
-import { IconUserSearch } from "@tabler/icons-react";
 import { getAlumniByIdService } from "../../service/signup";
+import { AxiosError } from "axios";
 
 type valuesForm = {
 	student_code: string;
 };
 
 function CheckAlumni() {
-	const { classes } = useStyles();
+	const { theme, classes } = useStyles();
 	const { setSignupData, loading, setLoading, nextStep, setInAlumni } =
 		useSignupContext();
 	const form = useForm({
@@ -39,21 +39,35 @@ function CheckAlumni() {
 	const { mutateAsync } = useMutation(getAlumniByIdService, {
 		onSuccess({ data }) {
 			setInAlumni(data.result.in_alumni);
+			const { firstname, lastname, student_code, tel } = data.result;
 			setSignupData((prev) => ({
 				...prev,
-				firstname: data.result.firstname ?? "",
-				lastname: data.result.lastname ?? "",
-				student_code: data.result.student_code,
-				tel: data.result.tel ?? "",
+				firstname: firstname ?? "",
+				lastname: lastname ?? "",
+				student_code: student_code,
+				tel: tel ?? "",
 			}));
 			nextStep();
 		},
-		onError() {
-			notifications.show({
-				title: "แจ้งเตือน",
-				message: "เกิดข้อผิดพลาดระหว่างการตรวจสอบรหัสนักศึกษา",
-				color: "red",
-			});
+		onError(error: AxiosError<{ success: string; message: string }>) {
+			if (
+				error &&
+				error.response &&
+				error.response.data &&
+				error.response.data.message
+			) {
+				notifications.show({
+					title: "แจ้งเตือน",
+					message: error.response.data.message,
+					color: "red",
+				});
+			} else {
+				notifications.show({
+					title: "แจ้งเตือน",
+					message: "เกิดข้อผิดพลาดระหว่างการตรวจสอบรหัสนักศึกษา",
+					color: "red",
+				});
+			}
 		},
 		onSettled() {
 			setLoading(false);
@@ -68,36 +82,48 @@ function CheckAlumni() {
 
 	return (
 		<Box w="100%" px="sm">
-			<Flex w="100%" justify="center" mb="lg">
-				<IconUserSearch size="8rem" stroke="1.5px" />
-			</Flex>
 			<form onSubmit={form.onSubmit(handleSubmit)}>
-				<TextInput
-					withAsterisk
-					label="รหัสนักศึกษา"
-					placeholder="XX061XXXX or XX06XXX"
-					required
-					type="number"
-					styles={{
-						label: {
-							fontSize: "1.25rem",
-						},
-					}}
-					{...form.getInputProps("student_code")}
-				/>
-				<Group position="right" mt="xl">
-					{/* <Button variant="default" onClick={prevStep}>
-						Back
-					</Button> */}
-					<Button
-						type="submit"
-						size="md"
-						loading={loading}
-						className={classes.btn}
-					>
-						ตรวจสอบ
-					</Button>
-				</Group>
+				<Card
+					bg="white"
+					px="sm"
+					pt="sm"
+					pb="2rem"
+					shadow="sm"
+					radius="md"
+					withBorder
+				>
+					<Box my="lg" pb="1rem" style={{ borderBottom: "1px solid #D6D6D7" }}>
+						<Text size="20px" weight="500">
+							กรุณากรอกรหัสนักศึกษา เพื่อดึงข้อมูลจากฐานข้อมูลศิษย์เก่า
+						</Text>
+						<Text size="14px" color="#999B9D">
+							(หากไม่พบจะนำไปใช้ในการลงทะเบียน ข้นตอนถัดไป)
+						</Text>
+					</Box>
+
+					<TextInput
+						withAsterisk
+						label="รหัสนักศึกษา"
+						placeholder="XX061XXXX or XX06XXX"
+						required
+						styles={{
+							label: {
+								fontSize: "1.1rem",
+								fontWeight: 400,
+							},
+						}}
+						{...form.getInputProps("student_code")}
+					/>
+				</Card>
+				<Button
+					mt="xl"
+					type="submit"
+					size="md"
+					loading={loading}
+					className={classes.btn}
+				>
+					ตรวจสอบ
+				</Button>
 			</form>
 		</Box>
 	);
@@ -105,9 +131,10 @@ function CheckAlumni() {
 
 const useStyles = createStyles((theme) => ({
 	btn: {
+		width: "100%",
 		backgroundColor: theme.colors["brand-primary"],
 		...theme.fn.hover({
-			backgroundColor: "#7B2319",
+			backgroundColor: "#59151E",
 		}),
 	},
 }));

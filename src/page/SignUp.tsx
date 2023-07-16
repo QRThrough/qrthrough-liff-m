@@ -1,4 +1,14 @@
-import { Stepper, px, createStyles, Box, Text } from "@mantine/core";
+import {
+	Stepper,
+	px,
+	createStyles,
+	Box,
+	Text,
+	rem,
+	Image,
+	Flex,
+	Group,
+} from "@mantine/core";
 import {
 	IconDeviceMobileMessage,
 	IconForms,
@@ -10,27 +20,33 @@ import { TSignupData } from "../types/signup";
 import { SignupContext } from "../context/signup";
 import liff from "@line/liff";
 import ProfileForm from "../component/SignUp/ProfileForm";
-import OTP from "../component/SignUp/OTP";
+import OneTimePassword from "../component/SignUp/OneTimePassword";
 import Result from "../component/SignUp/Result";
 import { TResRequestOTP } from "../types";
 
+const initialSignupData = {
+	token_id: "",
+	student_code: "",
+	firstname: "",
+	lastname: "",
+	tel: "",
+};
+
+export const initialOTPData = {
+	refno: "",
+	token: "",
+	pin: "",
+};
+
 function SignUp() {
 	const { classes } = useStyles();
-	const [signupData, setSignupData] = useState<TSignupData>({
-		token_id: "",
-		student_code: "",
-		firstname: "",
-		lastname: "",
-		tel: "",
-	});
+	const [signupData, setSignupData] = useState<TSignupData>(initialSignupData);
 
 	const [loading, setLoading] = useState<boolean>(false);
 	const [inAlumni, setInAlumni] = useState<boolean>(false);
-	const [otpData, setOTPData] = useState<TResRequestOTP & { pin: string }>({
-		refno: "",
-		token: "",
-		pin: "",
-	});
+	const [otpData, setOTPData] = useState<TResRequestOTP & { pin: string }>(
+		initialOTPData
+	);
 
 	const liffService = async () => {
 		try {
@@ -48,16 +64,33 @@ function SignUp() {
 
 	useEffect(() => {
 		liffService();
-		document.title = "QR Through | SignUp";
+		document.title = "QR Through | สมัครสมาชิก";
 	}, []);
 
 	const [active, setActive] = useState<number>(0);
 
-	const nextStep = () =>
+	const nextStep = () => {
 		setActive((current) => (current < 3 ? current + 1 : current));
+	};
 
-	const prevStep = () =>
+	const prevStep = () => {
+		switch (active) {
+			case 1:
+				setSignupData(initialSignupData);
+				break;
+			case 2:
+				setOTPData(initialOTPData);
+			default:
+				break;
+		}
 		setActive((current) => (current > 0 ? current - 1 : current));
+	};
+
+	const initialStep = () => {
+		setSignupData(initialSignupData);
+		setOTPData(initialOTPData);
+		setActive((current) => (current === 3 ? 0 : current));
+	};
 
 	return (
 		<SignupContext.Provider
@@ -72,32 +105,49 @@ function SignUp() {
 				setInAlumni,
 				otpData,
 				setOTPData,
+				initialStep,
 			}}
 		>
-			<Box className={classes.bar}>
-				<Text size={36} weight={500} color="white">
+			<Flex align="center" px="lg" py="xs" bg="white" justify="space-between">
+				<Box w="4rem" style={{ flex: 1 }}>
+					<Image src="/qr-through-icon.svg" />
+				</Box>
+				<Text
+					size="32px"
+					weight="500"
+					color="#59151E"
+					lh="40px"
+					align="center"
+					style={{ flex: 5 }}
+				>
 					สมัครสมาชิก
 				</Text>
-			</Box>
+				<Box style={{ flex: 1 }}></Box>
+			</Flex>
 			<Box className={classes.container}>
 				<Stepper
-					mt="md"
 					size="sm"
-					color="#cd3a29"
-					iconSize={px(32)}
+					color="#E1897F"
+					iconSize={32}
 					active={active}
-					onStepClick={setActive}
 					styles={{
+						steps: {
+							padding: "1rem",
+							backgroundImage: "linear-gradient(93deg,#93515A,#59151E)",
+						},
 						step: {
 							flex: 1,
 							flexDirection: "column",
 							alignSelf: "flex-start",
-							backgroundColor: "initial !important",
 						},
 						stepBody: {
 							margin: 0,
 						},
+						stepIcon: {
+							backgroundColor: "#FFF",
+						},
 						stepDescription: {
+							color: "#FFF",
 							textAlign: "center",
 						},
 					}}
@@ -121,7 +171,7 @@ function SignUp() {
 						description="รับ OTP"
 						allowStepSelect={false}
 					>
-						<OTP />
+						<OneTimePassword />
 					</Stepper.Step>
 					<Stepper.Completed>
 						<Result />
@@ -133,14 +183,7 @@ function SignUp() {
 }
 
 const useStyles = createStyles(() => ({
-	container: {
-		height: "100vh",
-		padding: "1rem",
-	},
-	bar: {
-		padding: "1rem",
-		backgroundColor: "#06C755",
-	},
+	container: {},
 }));
 
 export default SignUp;

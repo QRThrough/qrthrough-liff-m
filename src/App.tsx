@@ -13,7 +13,7 @@ function App() {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<MantineProvider theme={theme}>
-				<CustomFonts />
+				{/* <CustomFonts /> */}
 				<Notifications />
 				<AppLayout>
 					<MobileLayout>

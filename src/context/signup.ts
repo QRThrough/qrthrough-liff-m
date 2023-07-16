@@ -13,6 +13,7 @@ export type TSignup = {
 	setOTPData: React.Dispatch<
 		React.SetStateAction<TResRequestOTP & { pin: string }>
 	>;
+	initialStep: () => void;
 };
 export const SignupContext = createContext<TSignup>({
 	signupData: {
@@ -35,5 +36,6 @@ export const SignupContext = createContext<TSignup>({
 		pin: "",
 	},
 	setOTPData: () => {},
+	initialStep: () => {},
 });
 export const useSignupContext = () => useContext(SignupContext);

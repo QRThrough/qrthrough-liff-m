@@ -3,7 +3,7 @@ import { MantineThemeOverride, rem } from "@mantine/core";
 const theme: MantineThemeOverride = {
 	colorScheme: "light",
 	colors: {
-		"brand-primary": ["#cd3a29"],
+		"brand-primary": ["#93515A"],
 		"brand-secondary": ["#e2590b"],
 		"brand-complementary": ["#16438c"],
 		"brand-gray": ["#C4C4C4"],
@@ -11,7 +11,7 @@ const theme: MantineThemeOverride = {
 	},
 	black: "#232323",
 	white: "ghostwhite",
-	fontFamily: "Poppins, Mitr",
+	fontFamily: "Kanit, Mitr",
 	focusRingStyles: {
 		inputStyles: (theme) => ({
 			outline: `${rem(2)} solid ${theme.colors["brand-secondary"]}`,
