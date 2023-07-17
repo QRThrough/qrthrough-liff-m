@@ -3,7 +3,6 @@ import { Notifications } from "@mantine/notifications";
 import AppLayout from "./layout/AppLayout";
 import MobileLayout from "./layout/MobileLayout";
 import Router from "./router";
-import { CustomFonts } from "./style/CustomFonts";
 import theme from "./style/theme";
 import { QueryClient, QueryClientProvider } from "react-query";
 
