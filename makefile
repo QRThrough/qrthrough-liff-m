@@ -11,7 +11,7 @@ build-deploy:
     &&  docker rmi $$(docker images -aqf "reference=${APP_NAME}") \
     &&  docker load < /root/${APP_NAME}.tar \
     &&  rm /root/${APP_NAME}.tar \
-    &&  docker run -d -p 80:80 -p 443:443 --name ${APP_NAME} ${APP_NAME}'
+    &&  docker run -d -p 8080:80 --name ${APP_NAME} ${APP_NAME}'
 init-deploy:
 	docker build --platform linux/amd64 -t ${APP_NAME} .
 	docker save ${APP_NAME} > ${APP_NAME}.tar
@@ -20,4 +20,4 @@ init-deploy:
 	rm ./${APP_NAME}.tar
 	ssh -t ${REMOTE_HOST} 'docker load < /root/${APP_NAME}.tar \
     &&  rm /root/${APP_NAME}.tar \
-    &&  docker run -d -p 80:80 -p 443:443 --name ${APP_NAME} ${APP_NAME}'
+    &&  docker run -d -p 8080:80 --name ${APP_NAME} ${APP_NAME}'

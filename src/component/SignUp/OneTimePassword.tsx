@@ -182,7 +182,7 @@ function OneTimePassword() {
 					value={otpData.pin}
 					onChange={(v) => setOTPData((prev) => ({ ...prev, pin: v }))}
 					numInputs={4}
-					inputType="number"
+					inputType="text"
 					renderSeparator={<span>-</span>}
 					containerStyle={classes.containerInput}
 					renderInput={(props) => (
