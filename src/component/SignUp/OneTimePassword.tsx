@@ -7,7 +7,6 @@ import {
 	createStyles,
 	rem,
 } from "@mantine/core";
-import OtpInput from "react-otp-input";
 import { useSignupContext } from "../../context/signup";
 import { IconRefresh } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
@@ -15,6 +14,7 @@ import { useMutation } from "react-query";
 import { requestOTPService, verifyOTPService } from "../../service/otp";
 import { useState, useEffect } from "react";
 import { initialOTPData } from "../../page/SignUp";
+import OtpInput from "react18-input-otp";
 
 function OneTimePassword() {
 	const {
@@ -180,14 +180,13 @@ function OneTimePassword() {
 				</Text>
 				<OtpInput
 					value={otpData.pin}
-					onChange={(v) => setOTPData((prev) => ({ ...prev, pin: v }))}
+					onChange={(v: string) => setOTPData((prev) => ({ ...prev, pin: v }))}
 					numInputs={4}
-					inputType="text"
-					renderSeparator={<span>-</span>}
+					autoComplete="one-time-code"
+					isInputNum
+					separator={<span>-</span>}
 					containerStyle={classes.containerInput}
-					renderInput={(props) => (
-						<input {...props} className={classes.eachInput} />
-					)}
+					inputStyle={classes.eachInput}
 				/>
 				<Text w="100%" size={16} px="2rem" mt="1rem" align="center">
 					(ref: {otpData.refno})
