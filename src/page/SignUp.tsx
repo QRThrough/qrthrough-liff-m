@@ -1,14 +1,4 @@
-import {
-	Stepper,
-	px,
-	createStyles,
-	Box,
-	Text,
-	rem,
-	Image,
-	Flex,
-	Group,
-} from "@mantine/core";
+import { Stepper, Box, Text, Image, Flex } from "@mantine/core";
 import {
 	IconDeviceMobileMessage,
 	IconForms,
@@ -23,6 +13,7 @@ import ProfileForm from "../component/SignUp/ProfileForm";
 import OneTimePassword from "../component/SignUp/OneTimePassword";
 import Result from "../component/SignUp/Result";
 import { TResRequestOTP } from "../types";
+import { useQuery } from "react-query";
 
 const initialSignupData = {
 	token_id: "",
@@ -39,35 +30,41 @@ export const initialOTPData = {
 };
 
 function SignUp() {
-	const { classes } = useStyles();
 	const [signupData, setSignupData] = useState<TSignupData>(initialSignupData);
-
 	const [loading, setLoading] = useState<boolean>(false);
 	const [inAlumni, setInAlumni] = useState<boolean>(false);
 	const [otpData, setOTPData] = useState<TResRequestOTP & { pin: string }>(
 		initialOTPData
 	);
 
-	const liffService = async () => {
-		try {
-			await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
-			if (liff.isLoggedIn())
+	const { status } = useQuery("init", liffService, {
+		staleTime: Infinity,
+	});
+
+	async function liffService() {
+		await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
+		if (liff.isLoggedIn()) {
+			const idToken = liff.getIDToken();
+			if (typeof idToken === "string") {
 				setSignupData((prev) => ({
 					...prev,
-					token_id: liff.getIDToken() ?? "",
+					token_id: idToken,
 				}));
-			else liff.login();
-		} catch (e) {
-			console.log(e);
-		}
-	};
+			} else throw Error();
+		} else liff.login();
+	}
 
 	useEffect(() => {
-		liffService();
 		document.title = "QR Through | สมัครสมาชิก";
 	}, []);
 
 	const [active, setActive] = useState<number>(0);
+
+	const initialStep = () => {
+		setSignupData(initialSignupData);
+		setOTPData(initialOTPData);
+		setActive((current) => (current === 3 ? 0 : current));
+	};
 
 	const nextStep = () => {
 		setActive((current) => (current < 3 ? current + 1 : current));
@@ -84,12 +81,6 @@ function SignUp() {
 				break;
 		}
 		setActive((current) => (current > 0 ? current - 1 : current));
-	};
-
-	const initialStep = () => {
-		setSignupData(initialSignupData);
-		setOTPData(initialOTPData);
-		setActive((current) => (current === 3 ? 0 : current));
 	};
 
 	return (
@@ -124,66 +115,72 @@ function SignUp() {
 				</Text>
 				<Box style={{ flex: 1 }}></Box>
 			</Flex>
-			<Box className={classes.container}>
-				<Stepper
-					size="sm"
-					color="#E1897F"
-					iconSize={32}
-					active={active}
-					styles={{
-						steps: {
-							padding: "1rem",
-							backgroundImage: "linear-gradient(93deg,#93515A,#59151E)",
-						},
-						step: {
-							flex: 1,
-							flexDirection: "column",
-							alignSelf: "flex-start",
-						},
-						stepBody: {
-							margin: 0,
-						},
-						stepIcon: {
-							backgroundColor: "#FFF",
-						},
-						stepDescription: {
-							color: "#FFF",
-							textAlign: "center",
-						},
-					}}
-				>
-					<Stepper.Step
-						icon={<IconUserSearch size="1rem" />}
-						description="ตรวจรหัสนักศึกษา"
-						allowStepSelect={active > 0 && active <= 2}
+			{status === "loading" ? (
+				<Text size="14px" color="#59151E">
+					Loading validate "Line" authorization.
+				</Text>
+			) : status === "success" ? (
+				<Box>
+					<Stepper
+						size="sm"
+						color="#E1897F"
+						iconSize={32}
+						active={active}
+						styles={{
+							steps: {
+								padding: "1rem",
+								backgroundImage: "linear-gradient(93deg,#93515A,#59151E)",
+							},
+							step: {
+								flex: 1,
+								flexDirection: "column",
+								alignSelf: "flex-start",
+							},
+							stepBody: {
+								margin: 0,
+							},
+							stepIcon: {
+								backgroundColor: "#FFF",
+							},
+							stepDescription: {
+								color: "#FFF",
+								textAlign: "center",
+							},
+						}}
 					>
-						<CheckAlumni />
-					</Stepper.Step>
-					<Stepper.Step
-						icon={<IconForms size="1rem" />}
-						description="กรอกข้อมูล"
-						allowStepSelect={active > 1 && active <= 2}
-					>
-						<ProfileForm />
-					</Stepper.Step>
-					<Stepper.Step
-						icon={<IconDeviceMobileMessage size="1rem" />}
-						description="รับ OTP"
-						allowStepSelect={false}
-					>
-						<OneTimePassword />
-					</Stepper.Step>
-					<Stepper.Completed>
-						<Result />
-					</Stepper.Completed>
-				</Stepper>
-			</Box>
+						<Stepper.Step
+							icon={<IconUserSearch size="1rem" />}
+							description="ตรวจรหัสนักศึกษา"
+							allowStepSelect={active > 0 && active <= 2}
+						>
+							<CheckAlumni />
+						</Stepper.Step>
+						<Stepper.Step
+							icon={<IconForms size="1rem" />}
+							description="กรอกข้อมูล"
+							allowStepSelect={active > 1 && active <= 2}
+						>
+							<ProfileForm />
+						</Stepper.Step>
+						<Stepper.Step
+							icon={<IconDeviceMobileMessage size="1rem" />}
+							description="รับ OTP"
+							allowStepSelect={false}
+						>
+							<OneTimePassword />
+						</Stepper.Step>
+						<Stepper.Completed>
+							<Result />
+						</Stepper.Completed>
+					</Stepper>
+				</Box>
+			) : (
+				<Text size="14px" color="#59151E">
+					Something went wrong. please refresh the page.
+				</Text>
+			)}
 		</SignupContext.Provider>
 	);
 }
-
-const useStyles = createStyles(() => ({
-	container: {},
-}));
 
 export default SignUp;

@@ -18,7 +18,7 @@ type valuesForm = {
 };
 
 function CheckAlumni() {
-	const { theme, classes } = useStyles();
+	const { classes } = useStyles();
 	const { setSignupData, loading, setLoading, nextStep, setInAlumni } =
 		useSignupContext();
 	const form = useForm({
