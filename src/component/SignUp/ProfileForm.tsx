@@ -122,7 +122,6 @@ function ProfileForm() {
 					</Flex>
 
 					<TextInput
-						disabled={inAlumni}
 						mt="sm"
 						withAsterisk
 						required
@@ -137,7 +136,6 @@ function ProfileForm() {
 						{...form.getInputProps("firstname")}
 					/>
 					<TextInput
-						disabled={inAlumni}
 						mt="sm"
 						withAsterisk
 						required
