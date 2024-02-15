@@ -16,7 +16,7 @@ import { TResRequestOTP } from "../types";
 import { useQuery } from "react-query";
 
 const initialSignupData = {
-	token_id: "",
+	id_token: "",
 	student_code: "",
 	firstname: "",
 	lastname: "",
@@ -45,10 +45,11 @@ function SignUp() {
 		await liff.init({ liffId: import.meta.env.VITE_LIFF_ID });
 		if (liff.isLoggedIn()) {
 			const idToken = liff.getIDToken();
+
 			if (typeof idToken === "string") {
 				setSignupData((prev) => ({
 					...prev,
-					token_id: idToken,
+					id_token: idToken,
 				}));
 			} else throw Error();
 		} else liff.login();

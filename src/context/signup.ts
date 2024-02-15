@@ -17,7 +17,7 @@ export type TSignup = {
 };
 export const SignupContext = createContext<TSignup>({
 	signupData: {
-		token_id: "",
+		id_token: "",
 		student_code: "",
 		firstname: "",
 		lastname: "",

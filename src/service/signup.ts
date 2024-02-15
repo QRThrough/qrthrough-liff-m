@@ -9,7 +9,7 @@ import {
 
 export const getAlumniByIdService = async (id: number) => {
 	return await fetchPublic.get<IResponseNotUndefined<TCheckAlumni>>(
-		`/liff/user/${id}`
+		`/liff/alumni/${id}`
 	);
 };
 

@@ -1,5 +1,5 @@
 export type TSignupData = {
-	token_id: string;
+	id_token: string;
 	student_code: string;
 	firstname: string;
 	lastname: string;
